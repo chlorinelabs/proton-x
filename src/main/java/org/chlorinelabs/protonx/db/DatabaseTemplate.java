@@ -11,10 +11,6 @@ public class DatabaseTemplate {
         public boolean isUnique;
         public int[] modifiers;
 
-        @Override
-        public String toString() {
-            return "TemplateColumn ID:"+identifier+" Label:"+label+" isUnique:"+isUnique+" Modifiers:"+ Arrays.toString(modifiers);
-        }
     }
 
     public Vector<Column> cols = new Vector<>(1,1);
@@ -26,7 +22,6 @@ public class DatabaseTemplate {
         col.isUnique = isUnique;
         col.modifiers = mods;
         cols.addElement(col);
-        System.out.println(col.toString());
     }
 
     public void newColumnTemplate(String id, String label, int[] mods) {

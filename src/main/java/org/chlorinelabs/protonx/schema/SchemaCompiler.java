@@ -1,5 +1,6 @@
 package org.chlorinelabs.protonx.schema;
 
+import org.chlorinelabs.protonx.db.DatabaseMetadata;
 import org.chlorinelabs.protonx.db.DatabaseTemplate;
 
 import java.util.Vector;
@@ -7,6 +8,7 @@ import java.util.Vector;
 public class SchemaCompiler {
 
     private final LinkedBlock root;
+    private LinkedBlock metadataBlock;
 
     public SchemaCompiler(LinkedBlock root) {
         this.root = root;
@@ -20,15 +22,19 @@ public class SchemaCompiler {
                 for(LinkedBlock coldef:tlb.children)
                     ColumnsCompiler.compile(coldef);
                 ColumnsCompiler.ref = null;
+            } else if(tlb.content.equals("define database")) {
+                metadataBlock = tlb;
             }
         }
         return dt;
     }
 
+    public DatabaseMetadata compileMetadata() {
+        return MetadataCompiler.compile(metadataBlock);
+    }
+
     private static class ColumnsCompiler {
-
         private static DatabaseTemplate ref;
-
         public static void compile(LinkedBlock coldef) {
             String def = coldef.content;
             String id = null;
@@ -63,7 +69,24 @@ public class SchemaCompiler {
             }
             ref.newColumnTemplate(id, label, isUnique, modsArray);
         }
+    }
 
+    private static class MetadataCompiler {
+        public static DatabaseMetadata compile(LinkedBlock block) {
+            DatabaseMetadata meta = new DatabaseMetadata();
+            for(LinkedBlock b: block.children) {
+                if(b.content.startsWith("name:")) {
+                    meta.name = b.content.replace("name:", "").trim();
+                } else if(b.content.startsWith("filename:")) {
+                    meta.file = b.content.replace("filename:", "").trim();
+                } else if(b.content.startsWith("import_as:")) {
+                    meta.type = b.content.replace("import_as:", "").trim();
+                } else if(b.content.startsWith("ignore_header:")) {
+                    meta.ignoreHeader = Boolean.parseBoolean(b.content.replace("ignore_header:", "").trim());
+                }
+            }
+            return meta;
+        }
     }
 
 }

@@ -4,13 +4,13 @@ import org.chlorinelabs.protonx.util.DirectStreamReader;
 
 import java.util.Vector;
 
-public class Schema {
+public class SchemaParser {
 
     private final Vector<String> inputSchema;
     private final Vector<Integer> signalSchema;
     private final Vector<LinkedBlock> blocks;
 
-    public Schema(String file) {
+    public SchemaParser(String file) {
         inputSchema = DirectStreamReader.read(file);
         signalSchema = new Vector<>(1,1);
         blocks = new Vector<>(1,1);
